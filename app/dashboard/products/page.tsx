@@ -17,6 +17,7 @@ export default function ProductsPage() {
   const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
   const [search, setSearch] = useState('');
+  const [view, setView] = useState<'list' | 'kanban'>('list');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -34,6 +35,14 @@ export default function ProductsPage() {
   };
 
   const fmt = (n: number) => `₹${n.toLocaleString('en-IN')}`;
+
+  const categoryColors: Record<string, string> = {
+    'Seating': '#3b82f6',
+    'Tables': '#8b5cf6',
+    'Desks': '#0ea5e9',
+    'Storage': '#f59e0b',
+    'Furniture': '#10b981',
+  };
 
   return (
     <div>
@@ -53,6 +62,18 @@ export default function ProductsPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
+          <div style={{ display: 'flex', gap: '0.25rem', marginLeft: 'auto' }}>
+            <button
+              className={`btn btn-sm ${view === 'list' ? 'btn-primary' : 'btn-secondary'}`}
+              onClick={() => setView('list')}
+              title="List View"
+            >☰</button>
+            <button
+              className={`btn btn-sm ${view === 'kanban' ? 'btn-primary' : 'btn-secondary'}`}
+              onClick={() => setView('kanban')}
+              title="Kanban View"
+            >▦</button>
+          </div>
         </div>
 
         {loading ? (
@@ -64,7 +85,7 @@ export default function ProductsPage() {
             <p>Add your first product to get started</p>
             <Link href="/dashboard/products/new" className="btn btn-primary">+ New Product</Link>
           </div>
-        ) : (
+        ) : view === 'list' ? (
           <table className="data-table">
             <thead>
               <tr>
@@ -87,6 +108,48 @@ export default function ProductsPage() {
               ))}
             </tbody>
           </table>
+        ) : (
+          /* Kanban View */
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '1rem', padding: '1rem' }}>
+            {products.map((product) => (
+              <div
+                key={product.id}
+                onClick={() => router.push(`/dashboard/products/${product.id}`)}
+                style={{
+                  background: 'var(--bg-card)',
+                  border: '1px solid var(--border)',
+                  borderRadius: '12px',
+                  padding: '1.25rem',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--accent)'; (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--border)'; (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)'; }}
+              >
+                <div style={{
+                  width: '100%', height: '6px', borderRadius: '3px',
+                  background: categoryColors[product.category || 'Furniture'] || '#6b7280',
+                  marginBottom: '1rem'
+                }} />
+                <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.9375rem', marginBottom: '0.25rem' }}>
+                  {product.name}
+                </div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
+                  {product.category || 'Uncategorized'} · {product.type}
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8125rem' }}>
+                  <div>
+                    <div style={{ color: 'var(--text-muted)', fontSize: '0.625rem', textTransform: 'uppercase' }}>Sales Price</div>
+                    <div style={{ fontWeight: 600, color: 'var(--success)', fontFamily: 'monospace' }}>{fmt(product.salesPrice)}</div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ color: 'var(--text-muted)', fontSize: '0.625rem', textTransform: 'uppercase' }}>Cost</div>
+                    <div style={{ fontWeight: 600, color: 'var(--text-secondary)', fontFamily: 'monospace' }}>{fmt(product.cost)}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         )}
       </div>
     </div>

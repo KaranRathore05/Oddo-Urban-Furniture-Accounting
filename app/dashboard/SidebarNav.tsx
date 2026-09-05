@@ -40,6 +40,13 @@ const navSections = [
       { label: 'Profit & Loss', href: '/dashboard/reports/profit-loss', icon: '💰' },
     ],
   },
+  {
+    title: 'Analytics',
+    items: [
+      { label: 'Analytic Accounts', href: '/dashboard/analytics', icon: '📊' },
+      { label: 'Budgets', href: '/dashboard/budgets', icon: '🎯' },
+    ],
+  },
 ];
 
 export function SidebarNav({ user }: SidebarNavProps) {

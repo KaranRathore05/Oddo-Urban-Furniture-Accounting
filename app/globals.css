@@ -886,3 +886,109 @@
 .gap-2 { gap: 0.5rem; }
 .gap-4 { gap: 1rem; }
 .justify-between { justify-content: space-between; }
+
+/* ============ NEW DASHBOARD CHARTS ============ */
+.dash-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.kpi-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.kpi-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.kpi-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.kpi-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.kpi-value {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.kpi-change {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.charts-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.bottom-row {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 1.25rem;
+}
+
+.dash-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1.25rem;
+}
+
+.bank-card {
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.bank-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.bank-ac {
+  font-size: 0.625rem;
+  opacity: 0.8;
+  margin-bottom: 1rem;
+}
+
+.bank-bal {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+

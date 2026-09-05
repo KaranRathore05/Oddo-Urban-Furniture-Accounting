@@ -9,8 +9,10 @@ export default function SignupPage() {
   const router = useRouter();
   const [form, setForm] = useState({
     fullName: '',
+    loginId: '',
     email: '',
     mobile: '',
+    role: 'USER',
     password: '',
     confirmPassword: '',
   });
@@ -47,7 +49,6 @@ export default function SignupPage() {
     } catch {
       setGlobalError('Something went wrong. Please try again.');
     } finally {
-      setLoading(false);
       setLoading(false);
     }
   };
@@ -98,7 +99,7 @@ export default function SignupPage() {
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="fullName">Full Name</label>
+            <label htmlFor="fullName">Name</label>
             <input
               id="fullName"
               type="text"
@@ -112,7 +113,23 @@ export default function SignupPage() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="loginId">Login ID <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>(6-12 characters)</span></label>
+            <input
+              id="loginId"
+              type="text"
+              className="form-input"
+              placeholder="Choose a unique Login ID"
+              value={form.loginId}
+              onChange={(e) => setForm({ ...form, loginId: e.target.value })}
+              required
+              minLength={6}
+              maxLength={12}
+            />
+            {errors.loginId && <span className="form-error">{errors.loginId[0]}</span>}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="email">E-mail ID</label>
             <input
               id="email"
               type="email"
@@ -139,6 +156,35 @@ export default function SignupPage() {
             {errors.mobile && <span className="form-error">{errors.mobile[0]}</span>}
           </div>
 
+          <div className="form-group">
+            <label>Role</label>
+            <div style={{ display: 'flex', gap: '1.5rem', marginTop: '0.5rem' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.875rem' }}>
+                <input
+                  type="radio"
+                  name="role"
+                  value="USER"
+                  checked={form.role === 'USER'}
+                  onChange={(e) => setForm({ ...form, role: e.target.value })}
+                  style={{ accentColor: 'var(--accent)' }}
+                />
+                User
+              </label>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.875rem' }}>
+                <input
+                  type="radio"
+                  name="role"
+                  value="ADMIN"
+                  checked={form.role === 'ADMIN'}
+                  onChange={(e) => setForm({ ...form, role: e.target.value })}
+                  style={{ accentColor: 'var(--accent)' }}
+                />
+                Administrator
+              </label>
+            </div>
+            {errors.role && <span className="form-error">{errors.role[0]}</span>}
+          </div>
+
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="password">Password</label>
@@ -155,7 +201,7 @@ export default function SignupPage() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="confirmPassword">Confirm Password</label>
+              <label htmlFor="confirmPassword">Re-Enter Password</label>
               <input
                 id="confirmPassword"
                 type="password"
@@ -169,10 +215,15 @@ export default function SignupPage() {
             </div>
           </div>
 
-          <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
-            {loading ? <span className="loading-spinner" /> : null}
-            {loading ? 'Creating Account...' : 'Create Account'}
-          </button>
+          <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
+            <button type="submit" className="btn btn-primary" disabled={loading} style={{ flex: 1 }}>
+              {loading ? <span className="loading-spinner" /> : null}
+              {loading ? 'Creating...' : 'Create'}
+            </button>
+            <Link href="/login" className="btn btn-secondary" style={{ flex: 1, textAlign: 'center' }}>
+              Cancel
+            </Link>
+          </div>
         </form>
 
         <div style={{ display: 'flex', alignItems: 'center', margin: '1.5rem 0' }}>

@@ -15,7 +15,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { fullName, email, mobile, password } = parsed.data;
+    const { fullName, loginId, email, mobile, password, role } = parsed.data;
 
     // Check if email already exists
     const existing = await prisma.user.findUnique({ where: { email } });
@@ -26,9 +26,18 @@ export async function POST(request: Request) {
       );
     }
 
+    // Check if loginId already exists
+    const existingLoginId = await prisma.user.findUnique({ where: { loginId } });
+    if (existingLoginId) {
+      return NextResponse.json(
+        { error: 'Validation failed', details: { loginId: ['Login ID already taken'] } },
+        { status: 400 }
+      );
+    }
+
     const passwordHash = await hashPassword(password);
     const user = await prisma.user.create({
-      data: { fullName, email, mobile, passwordHash, role: 'ADMIN' },
+      data: { fullName, loginId, email, mobile, passwordHash, role },
     });
 
     const token = signToken(user.id, user.role, user.email);

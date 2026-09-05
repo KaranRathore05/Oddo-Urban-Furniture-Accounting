@@ -4,12 +4,15 @@ import { z } from 'zod';
 
 export const signupSchema = z.object({
   fullName: z.string().min(1, 'Full name is required'),
+  loginId: z.string().min(6, 'Login ID must be 6-12 characters').max(12, 'Login ID must be 6-12 characters'),
   email: z.string().email('Invalid email format'),
   mobile: z.string().regex(/^\d{10}$/, 'Mobile must be exactly 10 digits'),
+  role: z.enum(['USER', 'ADMIN'], { message: 'Select a role' }),
   password: z
     .string()
     .min(8, 'Password must be at least 8 characters')
-    .regex(/[a-zA-Z]/, 'Password must include at least one letter')
+    .regex(/[a-z]/, 'Password must include at least one lowercase letter')
+    .regex(/[A-Z]/, 'Password must include at least one uppercase letter')
     .regex(/[0-9]/, 'Password must include at least one number')
     .regex(/[^a-zA-Z0-9]/, 'Password must include at least one special character'),
   confirmPassword: z.string(),

@@ -5,7 +5,7 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Public paths that don't need auth
-  const publicPaths = ['/login', '/signup', '/api/auth/login', '/api/auth/signup'];
+  const publicPaths = ['/login', '/signup', '/api/auth/login', '/api/auth/signup', '/api/auth/google'];
   const isPublic = publicPaths.some(path => pathname.startsWith(path));
   
   // Static files and root
