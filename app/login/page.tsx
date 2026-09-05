@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -41,11 +42,41 @@ export default function LoginPage() {
       setGlobalError('Something went wrong. Please try again.');
     } finally {
       setLoading(false);
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse: any) => {
+    setErrors({});
+    setGlobalError('');
+    setLoading(true);
+
+    try {
+      const res = await fetch('/api/auth/google', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: credentialResponse.credential }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setGlobalError(data.error || 'Google login failed');
+        return;
+      }
+
+      router.push('/dashboard');
+      router.refresh();
+    } catch {
+      setGlobalError('Something went wrong with Google Login. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="auth-page">
+    <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || 'dummy_id'}>
+      <div className="auth-page">
       <div className="auth-card">
         <h1>Welcome Back</h1>
         <p className="subtitle">Sign in to Urban Furniture Accounting</p>
@@ -94,6 +125,21 @@ export default function LoginPage() {
           </button>
         </form>
 
+        <div style={{ display: 'flex', alignItems: 'center', margin: '1.5rem 0' }}>
+          <hr style={{ flex: 1, borderColor: 'var(--border)' }} />
+          <span style={{ padding: '0 1rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>OR</span>
+          <hr style={{ flex: 1, borderColor: 'var(--border)' }} />
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={() => {
+              setGlobalError('Google Login Failed');
+            }}
+          />
+        </div>
+
         <p style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
           Don&apos;t have an account?{' '}
           <Link href="/signup" style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 600 }}>
@@ -101,6 +147,7 @@ export default function LoginPage() {
           </Link>
         </p>
       </div>
-    </div>
+      </div>
+    </GoogleOAuthProvider>
   );
 }
