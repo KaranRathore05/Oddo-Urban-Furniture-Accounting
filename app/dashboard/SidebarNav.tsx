@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 interface SidebarNavProps {
   user: { id: string; fullName: string; email: string; role: string };
@@ -79,9 +80,12 @@ export function SidebarNav({ user }: SidebarNavProps) {
       </nav>
 
       <div className="sidebar-footer">
-        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.75rem' }}>
-          Signed in as<br />
-          <span style={{ color: 'var(--text-secondary)', fontWeight: 500 }}>{user.email}</span>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+            Signed in as<br />
+            <span style={{ color: 'var(--text-secondary)', fontWeight: 500 }}>{user.email}</span>
+          </div>
+          <ThemeToggle />
         </div>
         <button onClick={handleLogout} className="btn btn-secondary btn-sm btn-full">
           Sign Out

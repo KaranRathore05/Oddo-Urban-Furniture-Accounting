@@ -2,6 +2,28 @@
 
 @layer base {
   :root {
+    /* Light Mode Variables */
+    --bg-primary: #f8fafc;
+    --bg-secondary: #ffffff;
+    --bg-card: #ffffff;
+    --bg-hover: #f1f5f9;
+    --bg-input: #ffffff;
+    --border: #e2e8f0;
+    --border-focus: #d4a853;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+    --accent: #d4a853;
+    --accent-hover: #e6be6a;
+    --accent-dim: #b8902e;
+    --success: #22c55e;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --info: #3b82f6;
+  }
+
+  [data-theme='dark'] {
+    /* Dark Mode Variables */
     --bg-primary: #0a0a0f;
     --bg-secondary: #12121a;
     --bg-card: #1a1a2e;
@@ -63,7 +85,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #0a0a0f 0%, #12121a 50%, #1a1024 100%);
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-hover) 100%);
   padding: 1rem;
 }
 
