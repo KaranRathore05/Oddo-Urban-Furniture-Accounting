@@ -1,0 +1,227 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// --- User & Auth ---
+
+model User {
+  id           String   @id @default(cuid())
+  fullName     String
+  email        String   @unique
+  mobile       String
+  passwordHash String
+  role         String   @default("ACCOUNTANT") // ADMIN | ACCOUNTANT
+  createdAt    DateTime @default(now())
+}
+
+// --- Master Data ---
+
+model Contact {
+  id        String   @id @default(cuid())
+  name      String
+  type      String   // CUSTOMER | VENDOR | BOTH
+  email     String?
+  mobile    String?
+  city      String?
+  state     String?
+  pincode   String?
+  archived  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  purchaseOrders   PurchaseOrder[]
+  vendorBills      VendorBill[]
+  salesOrders      SalesOrder[]
+  customerInvoices CustomerInvoice[]
+  journalEntries   JournalEntry[]
+}
+
+model Product {
+  id         String  @id @default(cuid())
+  name       String
+  type       String  // GOODS | SERVICE
+  salesPrice Float
+  cost       Float
+  category   String?
+  archived   Boolean @default(false)
+
+  purchaseLines PurchaseOrderLine[]
+  salesLines    SalesOrderLine[]
+}
+
+// --- Chart of Accounts ---
+
+model Account {
+  id       String  @id @default(cuid())
+  name     String  @unique
+  type     String  // ASSET | LIABILITY | INCOME | EXPENSE | CAPITAL
+  isSeeded Boolean @default(true)
+
+  journalLines     JournalEntryLine[]
+  defaultOfJournal Journal[]
+}
+
+// --- Journals ---
+
+model Journal {
+  id               String  @id @default(cuid())
+  name             String  @unique
+  type             String  // SALES | PURCHASE | BANK | CASH
+  defaultAccountId String
+  defaultAccount   Account @relation(fields: [defaultAccountId], references: [id])
+
+  entries JournalEntry[]
+}
+
+// --- Journal Entries (system-generated, read-only) ---
+
+model JournalEntry {
+  id         String   @id @default(cuid())
+  journalId  String
+  journal    Journal  @relation(fields: [journalId], references: [id])
+  date       DateTime @default(now())
+  reference  String   // e.g. "BILL-0001", "INV-0002", "PAY-0003"
+  partnerId  String?
+  partner    Contact? @relation(fields: [partnerId], references: [id])
+  status     String   @default("POSTED") // POSTED
+  sourceType String   // VENDOR_BILL | BILL_PAYMENT | CUSTOMER_INVOICE | INVOICE_PAYMENT
+  sourceId   String
+  createdAt  DateTime @default(now())
+
+  lines JournalEntryLine[]
+}
+
+model JournalEntryLine {
+  id             String       @id @default(cuid())
+  journalEntryId String
+  journalEntry   JournalEntry @relation(fields: [journalEntryId], references: [id])
+  accountId      String
+  account        Account      @relation(fields: [accountId], references: [id])
+  debit          Float        @default(0)
+  credit         Float        @default(0)
+}
+
+// --- Purchase Flow ---
+
+model PurchaseOrder {
+  id        String              @id @default(cuid())
+  number    String              @unique
+  vendorId  String
+  vendor    Contact             @relation(fields: [vendorId], references: [id])
+  date      DateTime            @default(now())
+  status    String              @default("DRAFT") // DRAFT | CONFIRMED | BILLED
+  lines     PurchaseOrderLine[]
+  bill      VendorBill?
+  createdAt DateTime            @default(now())
+}
+
+model PurchaseOrderLine {
+  id        String        @id @default(cuid())
+  poId      String
+  po        PurchaseOrder @relation(fields: [poId], references: [id])
+  productId String
+  product   Product       @relation(fields: [productId], references: [id])
+  qty       Float
+  unitPrice Float
+}
+
+model VendorBill {
+  id          String        @id @default(cuid())
+  number      String        @unique
+  poId        String        @unique
+  po          PurchaseOrder @relation(fields: [poId], references: [id])
+  vendorId    String
+  vendor      Contact       @relation(fields: [vendorId], references: [id])
+  billDate    DateTime      @default(now())
+  dueDate     DateTime
+  status      String        @default("UNPAID") // UNPAID | PARTIAL | PAID
+  totalAmount Float
+  amountPaid  Float         @default(0)
+  payments    BillPayment[]
+  createdAt   DateTime      @default(now())
+}
+
+model BillPayment {
+  id             String     @id @default(cuid())
+  billId         String
+  bill           VendorBill @relation(fields: [billId], references: [id])
+  method         String     // CASH | BANK
+  amount         Float
+  date           DateTime   @default(now())
+  journalEntryId String
+}
+
+// --- Sales Flow ---
+
+model SalesOrder {
+  id         String           @id @default(cuid())
+  number     String           @unique
+  customerId String
+  customer   Contact          @relation(fields: [customerId], references: [id])
+  date       DateTime         @default(now())
+  status     String           @default("DRAFT") // DRAFT | CONFIRMED | INVOICED
+  lines      SalesOrderLine[]
+  invoice    CustomerInvoice?
+  createdAt  DateTime         @default(now())
+}
+
+model SalesOrderLine {
+  id        String     @id @default(cuid())
+  soId      String
+  so        SalesOrder @relation(fields: [soId], references: [id])
+  productId String
+  product   Product    @relation(fields: [productId], references: [id])
+  qty       Float
+  unitPrice Float
+  taxPct    Float      @default(0)
+}
+
+model CustomerInvoice {
+  id          String           @id @default(cuid())
+  number      String           @unique
+  soId        String           @unique
+  so          SalesOrder       @relation(fields: [soId], references: [id])
+  customerId  String
+  customer    Contact          @relation(fields: [customerId], references: [id])
+  invoiceDate DateTime         @default(now())
+  dueDate     DateTime
+  status      String           @default("UNPAID") // UNPAID | PARTIAL | PAID
+  totalAmount Float
+  amountPaid  Float            @default(0)
+  payments    InvoicePayment[]
+  createdAt   DateTime         @default(now())
+}
+
+model InvoicePayment {
+  id             String          @id @default(cuid())
+  invoiceId      String
+  invoice        CustomerInvoice @relation(fields: [invoiceId], references: [id])
+  method         String          // CASH | BANK
+  amount         Float
+  date           DateTime        @default(now())
+  journalEntryId String
+}
+
+// --- Stretch: Analytics & Budget ---
+
+model AnalyticAccount {
+  id      String   @id @default(cuid())
+  name    String
+  type    String   // INCOME | EXPENSE
+  budgets Budget[]
+}
+
+model Budget {
+  id                String          @id @default(cuid())
+  name              String
+  periodStart       DateTime
+  periodEnd         DateTime
+  responsiblePerson String
+  analyticAccountId String
+  analyticAccount   AnalyticAccount @relation(fields: [analyticAccountId], references: [id])
+  plannedAmount     Float
+}

@@ -1,36 +1,86 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Urban Furniture Accounting System - Developer Handoff
 
-## Getting Started
+Welcome to the Urban Furniture Accounting System project! This document outlines the current state of the 24-hour hackathon MVP, what has been completed, and exactly where the next team member needs to pick up the work.
 
-First, run the development server:
+## 🚀 Project Overview
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+A lightweight, single-tenant accounting web app for a small business ("Urban Furniture"). It connects master data (contacts, products, chart of accounts) to transactions (purchase/sales orders → bills/invoices → payments) and auto-generates balanced double-entry journal entries for every transaction.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**Core Tech Stack:** Next.js 14 (App Router), TypeScript, Prisma ORM, SQLite, Tailwind CSS, Zod, JWT Auth.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## ✅ What is Completed (Phases 1-3 & Start of 4)
 
-## Learn More
+1. **Database & Schema (`prisma/schema.prisma`)**: 
+   - All 20 models defined (User, Contact, Product, Account, Journal, JournalEntry, PurchaseOrder, VendorBill, SalesOrder, CustomerInvoice, etc.).
+   - Database pushed (`dev.db`).
 
-To learn more about Next.js, take a look at the following resources:
+2. **Seeding (`prisma/seed.ts`)**:
+   - Seed script includes 6 Chart of Accounts, 4 Journals, 2 Contacts, 2 Products, and 1 Admin user (`admin@urbanfurniture.com` / `Demo@1234`).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. **Authentication**:
+   - JWT-based auth implemented in `lib/auth.ts`.
+   - Login & Signup pages built with Zod validation.
+   - Middleware protection for all `/dashboard` routes.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+4. **Master Data UI & APIs (Phase 2)**:
+   - **Contacts**: Full CRUD APIs and Dashboard UI (List, New, Edit, Archive).
+   - **Products**: Full CRUD APIs and Dashboard UI (List, New, Edit, Archive).
+   - **Chart of Accounts**: Read-only UI and API.
+   - **Journals**: Read-only UI and API.
 
-## Deploy on Vercel
+5. **Core Auto-Posting Engine (Phase 3)**:
+   - **CRITICAL**: The accounting engine is fully built in `lib/postingEngine.ts`. It includes the 4 mandatory posting rules (Vendor Bill, Bill Payment, Customer Invoice, Invoice Payment) with atomic `$transaction` blocks, status updating logic, and strict double-entry `assertBalanced` safety checks.
+   - Auto-number generator built in `lib/numberGenerator.ts`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+6. **Purchase Flow APIs (Start of Phase 4)**:
+   - Built APIs for Purchase Orders: `GET / POST` list, `GET / PATCH` detail, `POST /confirm`, and `POST /create-bill` (which successfully hooks into the posting engine).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 🚧 What Needs to be Done (Next Developer Start Here)
+
+The next developer should resume from the middle of **Phase 4 (Transaction UIs & Remaining APIs)** and continue into **Phase 5 (Reports)**.
+
+### 1. Finish Phase 4: Purchase Flow UI & Sales Flow (API + UI)
+- **Purchase Order UI**: Build `/dashboard/purchase-orders` (List), `/dashboard/purchase-orders/new` (Form), and `/dashboard/purchase-orders/[id]` (Detail view with "Confirm" and "Create Bill" buttons).
+- **Vendor Bill API & UI**: Build APIs (`/api/vendor-bills`) and UIs for viewing bills and processing payments (`/dashboard/vendor-bills/[id]`). Include the Payment Modal.
+- **Sales Flow**: Replicate the PO & Bill logic for **Sales Orders** and **Customer Invoices**. 
+  - Build `app/api/sales-orders/...` and `app/api/customer-invoices/...`.
+  - Hook them up to `postCustomerInvoice` and `postInvoicePayment` from the `lib/postingEngine.ts`.
+  - Build corresponding UIs in `app/dashboard/sales-orders/...` and `app/dashboard/customer-invoices/...`.
+
+### 2. Phase 5: Reports & Ledger Views
+- **Journal Entries (Read-only)**: Build list and detail views (`/dashboard/journal-entries`) so users can see the automated accounting entries generated by the transactions.
+- **Balance Sheet Report**: Build `/api/reports/balance-sheet` and its UI. Must group Assets, Liabilities, and calculate Capital/Net Profit from historical Journal Entries.
+- **Profit & Loss Report**: Build `/api/reports/profit-loss` and its UI. Sum of Income vs Expense accounts over a date range.
+
+### 3. Phase 6 & 7: Stretch Goals & Polish
+- If time permits: Analytic Accounts, Budget module.
+- Final UI polish, loading states, error handling toasts.
+- Run the 5-minute end-to-end demo script (PO -> Bill -> Payment, SO -> Invoice -> Payment -> Balance Sheet verification).
+
+---
+
+## 💻 Getting Started Locally
+
+1. Clone the repository.
+2. Run `npm install`
+3. Ensure the `.env` file exists with:
+   ```env
+   DATABASE_URL="file:./dev.db"
+   JWT_SECRET="urban-furniture-demo-secret-key-2024"
+   ```
+4. Run migrations and seed the database:
+   ```bash
+   npm run db:setup
+   ```
+   *(This runs `npx prisma db push && npx tsx prisma/seed.ts`)*
+5. Start the development server:
+   ```bash
+   npm run dev
+   ```
+6. Log in with `admin@urbanfurniture.com` / `Demo@1234`.
+
+Good luck! The hardest part (the accounting engine and architecture) is done. Focus on building the forms, wiring up the API routes, and aggregating the reports!
