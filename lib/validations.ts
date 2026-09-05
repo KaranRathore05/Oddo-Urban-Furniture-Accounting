@@ -27,7 +27,7 @@ export const loginSchema = z.object({
 
 export const contactSchema = z.object({
   name: z.string().min(1, 'Contact name is required'),
-  type: z.enum(['CUSTOMER', 'VENDOR', 'BOTH'], { errorMap: () => ({ message: 'Select a valid contact type' }) }),
+  type: z.enum(['CUSTOMER', 'VENDOR', 'BOTH'], { message: 'Select a valid contact type' }),
   email: z.string().email('Invalid email format').optional().or(z.literal('')),
   mobile: z.string().regex(/^\d{10}$/, 'Mobile must be exactly 10 digits').optional().or(z.literal('')),
   city: z.string().optional().or(z.literal('')),
@@ -39,7 +39,7 @@ export const contactSchema = z.object({
 
 export const productSchema = z.object({
   name: z.string().min(1, 'Product name is required'),
-  type: z.enum(['GOODS', 'SERVICE'], { errorMap: () => ({ message: 'Select a valid product type' }) }),
+  type: z.enum(['GOODS', 'SERVICE'], { message: 'Select a valid product type' }),
   salesPrice: z.number().positive('Sales price must be positive'),
   cost: z.number().positive('Cost must be positive'),
   category: z.string().optional().or(z.literal('')),
@@ -77,7 +77,7 @@ export const salesOrderSchema = z.object({
 // --- Payment Schemas ---
 
 export const paymentSchema = z.object({
-  method: z.enum(['CASH', 'BANK'], { errorMap: () => ({ message: 'Select a payment method' }) }),
+  method: z.enum(['CASH', 'BANK'], { message: 'Select a payment method' }),
   amount: z.number().positive('Amount must be positive'),
   date: z.string().min(1, 'Date is required'),
 });
