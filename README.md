@@ -596,26 +596,45 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) and login with `admin@urbanfurniture.com` / `Demo@1234`.
 
-### PostgreSQL Setup (Production)
+### PostgreSQL Setup (For Team Members)
 
-```bash
-# 1. Create a PostgreSQL database
-createdb urban_furniture
+Since the project has been migrated to PostgreSQL, team members need to follow these exact steps to run the app locally:
 
-# 2. Update .env with your PostgreSQL connection string
-echo 'DATABASE_URL="postgresql://user:password@localhost:5432/urban_furniture"' > .env
-echo 'JWT_SECRET="a-very-strong-random-secret-key"' >> .env
+1. **Install PostgreSQL**  
+   Download and install PostgreSQL 14+ on your system. Remember the password you set for the `postgres` user.
 
-# 3. Update prisma/schema.prisma — change the datasource provider
-#    provider = "postgresql"   (instead of "sqlite")
+2. **Clone & Install Dependencies**
+   ```bash
+   git clone https://github.com/KaranRathore05/Oddo-Urban-Furniture-Accounting.git
+   cd Oddo-Urban-Furniture-Accounting
+   npm install
+   ```
 
-# 4. Push schema and seed
-npm run db:setup
+3. **Configure Environment Variables**  
+   Copy the example environment file and update your password:
+   ```bash
+   cp .env.example .env
+   ```
+   Open `.env` and change `password` to your actual PostgreSQL password in the `DATABASE_URL`.
 
-# 5. Build and start
-npm run build
-npm start
-```
+4. **Create the Database**  
+   Open your terminal (or pgAdmin) and create a new database called `urban_furniture`:
+   ```bash
+   # If you have psql in your PATH:
+   psql -U postgres -c "CREATE DATABASE urban_furniture;"
+   ```
+
+5. **Run Migrations & Seed Data**  
+   This will create all 14 tables and insert the default accounts/admin user:
+   ```bash
+   npm run db:setup
+   ```
+
+6. **Start the App**
+   ```bash
+   npm run dev
+   ```
+   Open [http://localhost:3000](http://localhost:3000) and login with `admin@urbanfurniture.com` / `Demo@1234`.
 
 ---
 
