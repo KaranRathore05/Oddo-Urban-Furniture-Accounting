@@ -1,10 +1,10 @@
-import { NextResponse } from 'next/server';
-import { paymentSchema } from '@/lib/validations';
-import { postInvoicePayment } from '@/lib/postingEngine';
+import { NextResponse } from "next/server";
+import { paymentSchema } from "@/lib/validations";
+import { postInvoicePayment } from "@/lib/postingEngine";
 
 export async function POST(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
 
@@ -14,8 +14,11 @@ export async function POST(
 
     if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Validation failed', details: parsed.error.flatten().fieldErrors },
-        { status: 400 }
+        {
+          error: "Validation failed",
+          details: parsed.error.flatten().fieldErrors,
+        },
+        { status: 400 },
       );
     }
 
@@ -25,8 +28,9 @@ export async function POST(
 
     return NextResponse.json(result, { status: 201 });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Failed to process payment';
-    console.error('Invoice payment error:', error);
+    const message =
+      error instanceof Error ? error.message : "Failed to process payment";
+    console.error("Invoice payment error:", error);
     return NextResponse.json({ error: message }, { status: 400 });
   }
 }

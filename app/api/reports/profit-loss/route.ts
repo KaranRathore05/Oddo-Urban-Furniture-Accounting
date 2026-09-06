@@ -1,13 +1,15 @@
-import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const from = searchParams.get('from') || new Date(new Date().getFullYear(), 0, 1).toISOString().split('T')[0];
-  const to = searchParams.get('to') || new Date().toISOString().split('T')[0];
+  const from =
+    searchParams.get("from") ||
+    new Date(new Date().getFullYear(), 0, 1).toISOString().split("T")[0];
+  const to = searchParams.get("to") || new Date().toISOString().split("T")[0];
 
-  const fromDate = new Date(from + 'T00:00:00.000Z');
-  const toDate = new Date(to + 'T23:59:59.999Z');
+  const fromDate = new Date(from + "T00:00:00.000Z");
+  const toDate = new Date(to + "T23:59:59.999Z");
 
   // Get all journal entry lines within the date range
   const lines = await prisma.journalEntryLine.findMany({
@@ -22,7 +24,10 @@ export async function GET(request: Request) {
   });
 
   // Aggregate by account
-  const accountTotals: Record<string, { name: string; type: string; debit: number; credit: number }> = {};
+  const accountTotals: Record<
+    string,
+    { name: string; type: string; debit: number; credit: number }
+  > = {};
 
   for (const line of lines) {
     const key = line.accountId;
@@ -42,9 +47,9 @@ export async function GET(request: Request) {
   const expenses: { name: string; amount: number }[] = [];
 
   for (const acc of Object.values(accountTotals)) {
-    if (acc.type === 'INCOME') {
+    if (acc.type === "INCOME") {
       income.push({ name: acc.name, amount: acc.credit - acc.debit });
-    } else if (acc.type === 'EXPENSE') {
+    } else if (acc.type === "EXPENSE") {
       expenses.push({ name: acc.name, amount: acc.debit - acc.credit });
     }
   }

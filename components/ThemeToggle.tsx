@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useTheme } from 'next-themes';
-import { useEffect, useState } from 'react';
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
@@ -13,25 +13,27 @@ export function ThemeToggle() {
 
   return (
     <button
-      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
       style={{
-        background: 'transparent',
-        border: 'none',
-        cursor: 'pointer',
-        fontSize: '1.25rem',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '0.25rem',
-        color: 'var(--text-secondary)',
-        borderRadius: '50%',
-        transition: 'background 0.2s',
+        background: "transparent",
+        border: "none",
+        cursor: "pointer",
+        fontSize: "1.25rem",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "0.25rem",
+        color: "var(--text-secondary)",
+        borderRadius: "50%",
+        transition: "background 0.2s",
       }}
-      title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-      onMouseOver={(e) => (e.currentTarget.style.background = 'var(--bg-hover)')}
-      onMouseOut={(e) => (e.currentTarget.style.background = 'transparent')}
+      title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+      onMouseOver={(e) =>
+        (e.currentTarget.style.background = "var(--bg-hover)")
+      }
+      onMouseOut={(e) => (e.currentTarget.style.background = "transparent")}
     >
-      {theme === 'dark' ? '☀️' : '🌙'}
+      {theme === "dark" ? "☀️" : "🌙"}
     </button>
   );
 }

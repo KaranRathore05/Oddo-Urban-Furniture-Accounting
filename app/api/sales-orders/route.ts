@@ -1,14 +1,14 @@
-import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
-import { salesOrderSchema } from '@/lib/validations';
-import { generateSONumber } from '@/lib/numberGenerator';
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
+import { salesOrderSchema } from "@/lib/validations";
+import { generateSONumber } from "@/lib/numberGenerator";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const status = searchParams.get('status') || '';
+  const status = searchParams.get("status") || "";
 
   const where: Record<string, unknown> = {};
-  if (status && status !== 'ALL') where.status = status;
+  if (status && status !== "ALL") where.status = status;
 
   const orders = await prisma.salesOrder.findMany({
     where,
@@ -16,7 +16,7 @@ export async function GET(request: Request) {
       customer: true,
       lines: { include: { product: true } },
     },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: "desc" },
   });
 
   return NextResponse.json(orders);
@@ -29,8 +29,11 @@ export async function POST(request: Request) {
 
     if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Validation failed', details: parsed.error.flatten().fieldErrors },
-        { status: 400 }
+        {
+          error: "Validation failed",
+          details: parsed.error.flatten().fieldErrors,
+        },
+        { status: 400 },
       );
     }
 
@@ -42,7 +45,7 @@ export async function POST(request: Request) {
         number,
         customerId,
         date: new Date(date),
-        status: 'DRAFT',
+        status: "DRAFT",
         lines: {
           create: lines.map((l) => ({
             productId: l.productId,
@@ -60,7 +63,10 @@ export async function POST(request: Request) {
 
     return NextResponse.json(so, { status: 201 });
   } catch (error) {
-    console.error('Create SO error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error("Create SO error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

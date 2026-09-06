@@ -17,6 +17,7 @@ model User {
   mobile       String
   passwordHash String
   role         String   @default("ACCOUNTANT") // ADMIN | ACCOUNTANT | USER
+  avatar       String?  @db.Text
   createdAt    DateTime @default(now())
 }
 

@@ -1,11 +1,11 @@
-import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
-import { generateInvoiceNumber } from '@/lib/numberGenerator';
-import { postCustomerInvoice } from '@/lib/postingEngine';
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
+import { generateInvoiceNumber } from "@/lib/numberGenerator";
+import { postCustomerInvoice } from "@/lib/postingEngine";
 
 export async function POST(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
 
@@ -16,21 +16,30 @@ export async function POST(
     });
 
     if (!so) {
-      return NextResponse.json({ error: 'Sales order not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: "Sales order not found" },
+        { status: 404 },
+      );
     }
 
-    if (so.status !== 'CONFIRMED') {
-      return NextResponse.json({ error: 'Only CONFIRMED orders can generate an invoice' }, { status: 400 });
+    if (so.status !== "CONFIRMED") {
+      return NextResponse.json(
+        { error: "Only CONFIRMED orders can generate an invoice" },
+        { status: 400 },
+      );
     }
 
     if (so.invoice) {
-      return NextResponse.json({ error: 'Invoice already exists for this SO' }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invoice already exists for this SO" },
+        { status: 400 },
+      );
     }
 
     // Calculate total from SO lines (including tax)
     const totalAmount = so.lines.reduce(
       (sum, l) => sum + l.qty * l.unitPrice * (1 + l.taxPct / 100),
-      0
+      0,
     );
     const invoiceNumber = await generateInvoiceNumber();
     const invoiceDate = new Date();
@@ -47,14 +56,14 @@ export async function POST(
           invoiceDate,
           dueDate,
           totalAmount,
-          status: 'UNPAID',
+          status: "UNPAID",
           amountPaid: 0,
         },
       });
 
       await tx.salesOrder.update({
         where: { id },
-        data: { status: 'INVOICED' },
+        data: { status: "INVOICED" },
       });
 
       return newInvoice;
@@ -65,7 +74,10 @@ export async function POST(
 
     return NextResponse.json({ invoice, journalEntry }, { status: 201 });
   } catch (error) {
-    console.error('Create invoice error:', error);
-    return NextResponse.json({ error: 'Failed to create invoice' }, { status: 500 });
+    console.error("Create invoice error:", error);
+    return NextResponse.json(
+      { error: "Failed to create invoice" },
+      { status: 500 },
+    );
   }
 }

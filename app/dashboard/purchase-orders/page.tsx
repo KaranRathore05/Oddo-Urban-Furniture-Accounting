@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface POLine {
   qty: number;
@@ -21,7 +21,7 @@ interface PurchaseOrder {
 export default function PurchaseOrdersPage() {
   const router = useRouter();
   const [orders, setOrders] = useState<PurchaseOrder[]>([]);
-  const [statusFilter, setStatusFilter] = useState('ALL');
+  const [statusFilter, setStatusFilter] = useState("ALL");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -31,7 +31,7 @@ export default function PurchaseOrdersPage() {
   const fetchOrders = async () => {
     setLoading(true);
     const params = new URLSearchParams();
-    if (statusFilter !== 'ALL') params.set('status', statusFilter);
+    if (statusFilter !== "ALL") params.set("status", statusFilter);
     const res = await fetch(`/api/purchase-orders?${params}`);
     const data = await res.json();
     setOrders(data);
@@ -46,7 +46,10 @@ export default function PurchaseOrdersPage() {
       <div className="page-header">
         <h1>Purchase Orders</h1>
         <div className="page-header-actions">
-          <Link href="/dashboard/purchase-orders/new" className="btn btn-primary">
+          <Link
+            href="/dashboard/purchase-orders/new"
+            className="btn btn-primary"
+          >
             + New Purchase Order
           </Link>
         </div>
@@ -56,7 +59,7 @@ export default function PurchaseOrdersPage() {
         <div className="data-table-toolbar">
           <select
             className="form-select"
-            style={{ maxWidth: '180px' }}
+            style={{ maxWidth: "180px" }}
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           >
@@ -68,13 +71,20 @@ export default function PurchaseOrdersPage() {
         </div>
 
         {loading ? (
-          <div className="loading-page"><div className="loading-spinner" /></div>
+          <div className="loading-page">
+            <div className="loading-spinner" />
+          </div>
         ) : orders.length === 0 ? (
           <div className="empty-state">
             <div className="icon">📦</div>
             <h3>No purchase orders found</h3>
             <p>Create your first purchase order to get started</p>
-            <Link href="/dashboard/purchase-orders/new" className="btn btn-primary">+ New Purchase Order</Link>
+            <Link
+              href="/dashboard/purchase-orders/new"
+              className="btn btn-primary"
+            >
+              + New Purchase Order
+            </Link>
           </div>
         ) : (
           <table className="data-table">
@@ -89,11 +99,26 @@ export default function PurchaseOrdersPage() {
             </thead>
             <tbody>
               {orders.map((po) => (
-                <tr key={po.id} onClick={() => router.push(`/dashboard/purchase-orders/${po.id}`)}>
-                  <td style={{ color: 'var(--text-primary)', fontWeight: 500, fontFamily: 'monospace' }}>{po.number}</td>
+                <tr
+                  key={po.id}
+                  onClick={() =>
+                    router.push(`/dashboard/purchase-orders/${po.id}`)
+                  }
+                >
+                  <td
+                    style={{
+                      color: "var(--text-primary)",
+                      fontWeight: 500,
+                      fontFamily: "monospace",
+                    }}
+                  >
+                    {po.number}
+                  </td>
                   <td>{po.vendor.name}</td>
                   <td>{new Date(po.date).toLocaleDateString()}</td>
-                  <td style={{ fontFamily: 'monospace' }}>₹{getTotal(po.lines).toLocaleString('en-IN')}</td>
+                  <td style={{ fontFamily: "monospace" }}>
+                    ₹{getTotal(po.lines).toLocaleString("en-IN")}
+                  </td>
                   <td>
                     <span className={`badge badge-${po.status.toLowerCase()}`}>
                       {po.status}

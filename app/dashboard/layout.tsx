@@ -1,11 +1,16 @@
-import { redirect } from 'next/navigation';
-import { getSession } from '@/lib/auth';
-import { SidebarNav } from './SidebarNav';
+import { redirect } from "next/navigation";
+import { getSession } from "@/lib/auth";
+import { SidebarNav } from "./SidebarNav";
+import UserMenu from "@/components/dashboard/UserMenu";
 
-export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default async function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const session = await getSession();
   if (!session) {
-    redirect('/login');
+    redirect("/login");
   }
 
   return (
@@ -14,18 +19,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <div className="main-content">
         <div className="topbar">
           <div />
-          <div className="topbar-user">
-            <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
-              {session.fullName}
-            </span>
-            <div className="topbar-avatar">
-              {session.fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
-            </div>
-          </div>
+          <UserMenu user={session} />
         </div>
-        <div className="page-content">
-          {children}
-        </div>
+        <div className="page-content">{children}</div>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server';
-import { OAuth2Client } from 'google-auth-library';
-import { prisma } from '@/lib/db';
-import { signToken, setAuthCookie, hashPassword } from '@/lib/auth';
+import { NextResponse } from "next/server";
+import { OAuth2Client } from "google-auth-library";
+import { prisma } from "@/lib/db";
+import { signToken, setAuthCookie, hashPassword } from "@/lib/auth";
 
 const client = new OAuth2Client(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID);
 
@@ -9,7 +9,7 @@ export async function POST(request: Request) {
   try {
     const { token } = await request.json();
     if (!token) {
-      return NextResponse.json({ error: 'No token provided' }, { status: 400 });
+      return NextResponse.json({ error: "No token provided" }, { status: 400 });
     }
 
     // Verify the Google token
@@ -17,10 +17,13 @@ export async function POST(request: Request) {
       idToken: token,
       audience: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
     });
-    
+
     const payload = ticket.getPayload();
     if (!payload || !payload.email) {
-      return NextResponse.json({ error: 'Invalid Google token payload' }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid Google token payload" },
+        { status: 400 },
+      );
     }
 
     const { email, name, sub } = payload;
@@ -36,11 +39,11 @@ export async function POST(request: Request) {
       user = await prisma.user.create({
         data: {
           email,
-          fullName: name || 'Google User',
-          mobile: '0000000000', // Default or prompt later
+          fullName: name || "Google User",
+          mobile: "0000000000", // Default or prompt later
           passwordHash, // Random secure dummy password
-          role: 'ACCOUNTANT'
-        }
+          role: "ACCOUNTANT",
+        },
       });
     }
 
@@ -48,11 +51,17 @@ export async function POST(request: Request) {
     const sessionToken = signToken(user.id, user.role, user.email);
     const cookie = setAuthCookie(sessionToken);
 
-    const response = NextResponse.json({ success: true, user: { id: user.id, email: user.email, role: user.role } });
+    const response = NextResponse.json({
+      success: true,
+      user: { id: user.id, email: user.email, role: user.role },
+    });
     response.cookies.set(cookie as any); // Type assertion for next/server cookie options
     return response;
   } catch (error) {
-    console.error('Google Auth Error:', error);
-    return NextResponse.json({ error: 'Authentication failed' }, { status: 500 });
+    console.error("Google Auth Error:", error);
+    return NextResponse.json(
+      { error: "Authentication failed" },
+      { status: 500 },
+    );
   }
 }

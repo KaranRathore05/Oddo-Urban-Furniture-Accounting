@@ -1,11 +1,11 @@
-import { prisma } from './db';
+import { prisma } from "./db";
 
 /**
  * Auto-Posting Engine
- * 
+ *
  * This is the core accounting logic. Every transaction produces a mathematically
  * balanced journal entry. There are exactly 4 posting rules:
- * 
+ *
  * 1. Vendor Bill confirmed    → Debit: Purchase Expense, Credit: Creditors
  * 2. Payment to vendor        → Debit: Creditors, Credit: Bank or Cash
  * 3. Customer Invoice created → Debit: Debtors, Credit: Sales Income
@@ -39,15 +39,15 @@ function assertBalanced(lines: JournalLine[]): void {
   if (Math.abs(totalDebit - totalCredit) > 0.001) {
     throw new Error(
       `Unbalanced journal entry: Debit=${totalDebit}, Credit=${totalCredit}. ` +
-      `Difference=${Math.abs(totalDebit - totalCredit)}`
+        `Difference=${Math.abs(totalDebit - totalCredit)}`,
     );
   }
 }
 
 function computeBillStatus(amountPaid: number, totalAmount: number): string {
-  if (amountPaid >= totalAmount) return 'PAID';
-  if (amountPaid > 0) return 'PARTIAL';
-  return 'UNPAID';
+  if (amountPaid >= totalAmount) return "PAID";
+  if (amountPaid > 0) return "PARTIAL";
+  return "UNPAID";
 }
 
 // --- Posting Function 1: Vendor Bill Confirmed ---
@@ -60,9 +60,9 @@ export async function postVendorBill(billId: string) {
   });
   if (!bill) throw new Error(`Vendor bill not found: ${billId}`);
 
-  const purchaseExpense = await getAccountByName('Purchase Expense');
-  const creditors = await getAccountByName('Creditors');
-  const purchaseJournal = await getJournalByType('PURCHASE');
+  const purchaseExpense = await getAccountByName("Purchase Expense");
+  const creditors = await getAccountByName("Creditors");
+  const purchaseJournal = await getJournalByType("PURCHASE");
 
   const lines: JournalLine[] = [
     { accountId: purchaseExpense.id, debit: bill.totalAmount, credit: 0 },
@@ -76,7 +76,7 @@ export async function postVendorBill(billId: string) {
       journalId: purchaseJournal.id,
       reference: bill.number,
       partnerId: bill.vendorId,
-      sourceType: 'VENDOR_BILL',
+      sourceType: "VENDOR_BILL",
       sourceId: bill.id,
       date: bill.billDate,
       lines: { create: lines },
@@ -94,7 +94,7 @@ export async function postBillPayment(
   billId: string,
   method: string,
   amount: number,
-  paymentDate: Date
+  paymentDate: Date,
 ) {
   const bill = await prisma.vendorBill.findUnique({
     where: { id: billId },
@@ -107,13 +107,15 @@ export async function postBillPayment(
   if (newAmountPaid > bill.totalAmount + 0.001) {
     throw new Error(
       `Payment of ₹${amount} would exceed the bill total. ` +
-      `Outstanding: ₹${(bill.totalAmount - bill.amountPaid).toFixed(2)}`
+        `Outstanding: ₹${(bill.totalAmount - bill.amountPaid).toFixed(2)}`,
     );
   }
 
-  const creditors = await getAccountByName('Creditors');
-  const paymentAccount = await getAccountByName(method === 'BANK' ? 'Bank' : 'Cash');
-  const journal = await getJournalByType(method === 'BANK' ? 'BANK' : 'CASH');
+  const creditors = await getAccountByName("Creditors");
+  const paymentAccount = await getAccountByName(
+    method === "BANK" ? "Bank" : "Cash",
+  );
+  const journal = await getJournalByType(method === "BANK" ? "BANK" : "CASH");
 
   const lines: JournalLine[] = [
     { accountId: creditors.id, debit: amount, credit: 0 },
@@ -129,7 +131,7 @@ export async function postBillPayment(
         journalId: journal.id,
         reference: `PAY-${bill.number}`,
         partnerId: bill.vendorId,
-        sourceType: 'BILL_PAYMENT',
+        sourceType: "BILL_PAYMENT",
         sourceId: billId,
         date: paymentDate,
         lines: { create: lines },
@@ -173,9 +175,9 @@ export async function postCustomerInvoice(invoiceId: string) {
   });
   if (!invoice) throw new Error(`Customer invoice not found: ${invoiceId}`);
 
-  const debtors = await getAccountByName('Debtors');
-  const salesIncome = await getAccountByName('Sales Income');
-  const salesJournal = await getJournalByType('SALES');
+  const debtors = await getAccountByName("Debtors");
+  const salesIncome = await getAccountByName("Sales Income");
+  const salesJournal = await getJournalByType("SALES");
 
   const lines: JournalLine[] = [
     { accountId: debtors.id, debit: invoice.totalAmount, credit: 0 },
@@ -189,7 +191,7 @@ export async function postCustomerInvoice(invoiceId: string) {
       journalId: salesJournal.id,
       reference: invoice.number,
       partnerId: invoice.customerId,
-      sourceType: 'CUSTOMER_INVOICE',
+      sourceType: "CUSTOMER_INVOICE",
       sourceId: invoice.id,
       date: invoice.invoiceDate,
       lines: { create: lines },
@@ -207,7 +209,7 @@ export async function postInvoicePayment(
   invoiceId: string,
   method: string,
   amount: number,
-  paymentDate: Date
+  paymentDate: Date,
 ) {
   const invoice = await prisma.customerInvoice.findUnique({
     where: { id: invoiceId },
@@ -220,13 +222,15 @@ export async function postInvoicePayment(
   if (newAmountPaid > invoice.totalAmount + 0.001) {
     throw new Error(
       `Payment of ₹${amount} would exceed the invoice total. ` +
-      `Outstanding: ₹${(invoice.totalAmount - invoice.amountPaid).toFixed(2)}`
+        `Outstanding: ₹${(invoice.totalAmount - invoice.amountPaid).toFixed(2)}`,
     );
   }
 
-  const paymentAccount = await getAccountByName(method === 'BANK' ? 'Bank' : 'Cash');
-  const debtors = await getAccountByName('Debtors');
-  const journal = await getJournalByType(method === 'BANK' ? 'BANK' : 'CASH');
+  const paymentAccount = await getAccountByName(
+    method === "BANK" ? "Bank" : "Cash",
+  );
+  const debtors = await getAccountByName("Debtors");
+  const journal = await getJournalByType(method === "BANK" ? "BANK" : "CASH");
 
   const lines: JournalLine[] = [
     { accountId: paymentAccount.id, debit: amount, credit: 0 },
@@ -241,7 +245,7 @@ export async function postInvoicePayment(
         journalId: journal.id,
         reference: `PAY-${invoice.number}`,
         partnerId: invoice.customerId,
-        sourceType: 'INVOICE_PAYMENT',
+        sourceType: "INVOICE_PAYMENT",
         sourceId: invoiceId,
         date: paymentDate,
         lines: { create: lines },

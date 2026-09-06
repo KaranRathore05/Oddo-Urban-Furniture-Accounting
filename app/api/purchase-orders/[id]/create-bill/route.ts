@@ -1,11 +1,11 @@
-import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
-import { generateBillNumber } from '@/lib/numberGenerator';
-import { postVendorBill } from '@/lib/postingEngine';
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
+import { generateBillNumber } from "@/lib/numberGenerator";
+import { postVendorBill } from "@/lib/postingEngine";
 
 export async function POST(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
 
@@ -16,19 +16,31 @@ export async function POST(
     });
 
     if (!po) {
-      return NextResponse.json({ error: 'Purchase order not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: "Purchase order not found" },
+        { status: 404 },
+      );
     }
 
-    if (po.status !== 'CONFIRMED') {
-      return NextResponse.json({ error: 'Only CONFIRMED orders can generate a bill' }, { status: 400 });
+    if (po.status !== "CONFIRMED") {
+      return NextResponse.json(
+        { error: "Only CONFIRMED orders can generate a bill" },
+        { status: 400 },
+      );
     }
 
     if (po.bill) {
-      return NextResponse.json({ error: 'Bill already exists for this PO' }, { status: 400 });
+      return NextResponse.json(
+        { error: "Bill already exists for this PO" },
+        { status: 400 },
+      );
     }
 
     // Calculate total from PO lines
-    const totalAmount = po.lines.reduce((sum, l) => sum + l.qty * l.unitPrice, 0);
+    const totalAmount = po.lines.reduce(
+      (sum, l) => sum + l.qty * l.unitPrice,
+      0,
+    );
     const billNumber = await generateBillNumber();
     const billDate = new Date();
     const dueDate = new Date();
@@ -44,14 +56,14 @@ export async function POST(
           billDate,
           dueDate,
           totalAmount,
-          status: 'UNPAID',
+          status: "UNPAID",
           amountPaid: 0,
         },
       });
 
       await tx.purchaseOrder.update({
         where: { id },
-        data: { status: 'BILLED' },
+        data: { status: "BILLED" },
       });
 
       return newBill;
@@ -62,7 +74,10 @@ export async function POST(
 
     return NextResponse.json({ bill, journalEntry }, { status: 201 });
   } catch (error) {
-    console.error('Create bill error:', error);
-    return NextResponse.json({ error: 'Failed to create bill' }, { status: 500 });
+    console.error("Create bill error:", error);
+    return NextResponse.json(
+      { error: "Failed to create bill" },
+      { status: 500 },
+    );
   }
 }

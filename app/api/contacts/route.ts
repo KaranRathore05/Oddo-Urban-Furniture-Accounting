@@ -1,24 +1,24 @@
-import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
-import { contactSchema } from '@/lib/validations';
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
+import { contactSchema } from "@/lib/validations";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const search = searchParams.get('search') || '';
-  const type = searchParams.get('type') || '';
+  const search = searchParams.get("search") || "";
+  const type = searchParams.get("type") || "";
 
   const where: Record<string, unknown> = { archived: false };
-  
+
   if (search) {
     where.name = { contains: search };
   }
-  if (type && type !== 'ALL') {
+  if (type && type !== "ALL") {
     where.type = type;
   }
 
   const contacts = await prisma.contact.findMany({
     where,
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: "desc" },
   });
 
   return NextResponse.json(contacts);
@@ -31,8 +31,11 @@ export async function POST(request: Request) {
 
     if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Validation failed', details: parsed.error.flatten().fieldErrors },
-        { status: 400 }
+        {
+          error: "Validation failed",
+          details: parsed.error.flatten().fieldErrors,
+        },
+        { status: 400 },
       );
     }
 
@@ -51,7 +54,10 @@ export async function POST(request: Request) {
 
     return NextResponse.json(contact, { status: 201 });
   } catch (error) {
-    console.error('Create contact error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error("Create contact error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

@@ -1,9 +1,9 @@
-import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
   const invoice = await prisma.customerInvoice.findUnique({
@@ -20,7 +20,10 @@ export async function GET(
   });
 
   if (!invoice) {
-    return NextResponse.json({ error: 'Customer invoice not found' }, { status: 404 });
+    return NextResponse.json(
+      { error: "Customer invoice not found" },
+      { status: 404 },
+    );
   }
 
   return NextResponse.json(invoice);
