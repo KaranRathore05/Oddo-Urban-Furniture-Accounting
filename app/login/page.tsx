@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+import VantaBackground from '@/components/VantaBackground';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -76,7 +77,7 @@ export default function LoginPage() {
 
   return (
     <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || 'dummy_id'}>
-      <div className="auth-page">
+      <VantaBackground>
       <div className="auth-card">
         <h1>Welcome Back</h1>
         <p className="subtitle">Sign in to Urban Furniture Accounting</p>
@@ -147,7 +148,7 @@ export default function LoginPage() {
           </Link>
         </p>
       </div>
-      </div>
+      </VantaBackground>
     </GoogleOAuthProvider>
   );
 }

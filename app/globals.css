@@ -2,45 +2,45 @@
 
 @layer base {
   :root {
-    /* Light Mode Variables */
+    /* Premium Slate & Indigo Light Mode */
     --bg-primary: #f8fafc;
-    --bg-secondary: #ffffff;
+    --bg-secondary: #f1f5f9;
     --bg-card: #ffffff;
-    --bg-hover: #f1f5f9;
+    --bg-hover: #e2e8f0;
     --bg-input: #ffffff;
     --border: #e2e8f0;
-    --border-focus: #d4a853;
+    --border-focus: #6366f1;
     --text-primary: #0f172a;
     --text-secondary: #475569;
-    --text-muted: #64748b;
-    --accent: #d4a853;
-    --accent-hover: #e6be6a;
-    --accent-dim: #b8902e;
-    --success: #22c55e;
+    --text-muted: #94a3b8;
+    --accent: #4f46e5;
+    --accent-hover: #6366f1;
+    --accent-dim: #4338ca;
+    --success: #10b981;
     --warning: #f59e0b;
-    --danger: #ef4444;
-    --info: #3b82f6;
+    --danger: #f43f5e;
+    --info: #0ea5e9;
   }
 
   [data-theme='dark'] {
-    /* Dark Mode Variables */
-    --bg-primary: #0a0a0f;
-    --bg-secondary: #12121a;
-    --bg-card: #1a1a2e;
-    --bg-hover: #222240;
-    --bg-input: #16162a;
-    --border: #2a2a4a;
-    --border-focus: #d4a853;
-    --text-primary: #f0f0f5;
-    --text-secondary: #8888aa;
-    --text-muted: #555570;
-    --accent: #d4a853;
-    --accent-hover: #e6be6a;
-    --accent-dim: #b8902e;
-    --success: #22c55e;
+    /* Premium Modern Dark Mode Variables */
+    --bg-primary: #09090b;
+    --bg-secondary: #121214;
+    --bg-card: #18181b;
+    --bg-hover: #27272a;
+    --bg-input: #18181b;
+    --border: #27272a;
+    --border-focus: #3b82f6;
+    --text-primary: #f4f4f5;
+    --text-secondary: #a1a1aa;
+    --text-muted: #71717a;
+    --accent: #3b82f6;
+    --accent-hover: #60a5fa;
+    --accent-dim: #2563eb;
+    --success: #10b981;
     --warning: #f59e0b;
     --danger: #ef4444;
-    --info: #3b82f6;
+    --info: #0ea5e9;
   }
 
   * {
@@ -52,7 +52,7 @@
   body {
     background-color: var(--bg-primary);
     color: var(--text-primary);
-    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -94,9 +94,9 @@
   max-width: 440px;
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 24px;
   padding: 2.5rem;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
 .auth-card h1 {
@@ -134,7 +134,7 @@
   padding: 0.75rem 1rem;
   background: var(--bg-input);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 12px;
   color: var(--text-primary);
   font-size: 0.875rem;
   transition: all 0.2s ease;
@@ -155,7 +155,7 @@
   padding: 0.75rem 1rem;
   background: var(--bg-input);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 12px;
   color: var(--text-primary);
   font-size: 0.875rem;
   transition: all 0.2s ease;
@@ -195,7 +195,7 @@
   padding: 0.75rem 1.5rem;
   font-size: 0.875rem;
   font-weight: 600;
-  border-radius: 8px;
+  border-radius: 12px;
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -407,7 +407,7 @@
 .card {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 20px;
   padding: 1.5rem;
   transition: all 0.2s ease;
 }
@@ -426,7 +426,7 @@
 .stat-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 20px;
   padding: 1.5rem;
 }
 
@@ -444,7 +444,7 @@
 .quick-action-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 20px;
   padding: 1.75rem;
   cursor: pointer;
   transition: all 0.25s ease;
@@ -485,7 +485,7 @@
 .data-table-wrap {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 20px;
   overflow: hidden;
 }
 
@@ -504,7 +504,7 @@
   padding-left: 2.25rem;
   background: var(--bg-input);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 12px;
   color: var(--text-primary);
   font-size: 0.8125rem;
   outline: none;
@@ -595,8 +595,8 @@
 .modal-content {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 2rem;
+  border-radius: 24px;
+  padding: 2.5rem;
   width: 100%;
   max-width: 500px;
   max-height: 90vh;
@@ -624,8 +624,8 @@
 .report-container {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 2rem;
+  border-radius: 20px;
+  padding: 2.5rem;
 }
 
 .report-header {
@@ -801,6 +801,60 @@
   font-size: 3rem;
   margin-bottom: 1rem;
   opacity: 0.5;
+}
+
+/* ============ MICRO-ANIMATIONS ============ */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes wiggle {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(-12deg); }
+  50% { transform: rotate(12deg); }
+  75% { transform: rotate(-6deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes pulse-glow {
+  0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+}
+
+/* Sidebar Icon Animations */
+.sidebar-link span {
+  display: inline-block;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: center;
+}
+.sidebar-link:hover span {
+  transform: scale(1.2) rotate(-8deg);
+}
+
+/* Quick Action Card Icon Animations */
+.quick-action-card .icon-wrap {
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+.quick-action-card:hover .icon-wrap {
+  animation: float 2s ease-in-out infinite;
+  transform: scale(1.1);
+}
+
+/* KPI Card Icon Animations */
+.kpi-card .kpi-icon {
+  transition: transform 0.3s ease;
+  transform-origin: center;
+}
+.kpi-card:hover .kpi-icon {
+  animation: wiggle 0.6s ease-in-out;
+}
+
+/* Button Hover Animations */
+.btn-primary:active {
+  transform: scale(0.96);
 }
 
 .empty-state h3 {

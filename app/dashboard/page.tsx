@@ -164,6 +164,9 @@ export default async function DashboardPage() {
         </div>
 
         {/* 2. Charts Row */}
+        <h2 style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '1rem', marginTop: '2rem' }}>
+          Reports & Visuals
+        </h2>
         <div className="charts-row">
           <div className="dash-card">
             <h3 className="dash-title">Cash Flow Overview</h3>
